@@ -22,10 +22,10 @@ jobs:
           dotnet-version: '6.0' # SDK Version to use; x will use the latest version of the 3.1 channel
       
       - name: Publish prod
-        run: dotnet restore; dotnet publish -r linux-x64 --configuration "Release" --self-contained "true" -o ./site;
+        run: cd donetapp dotnet restore; dotnet publish -r linux-x64 --configuration "Release" --self-contained "true" -o ./site;
 
       - name: Generate deployment package 
-        run: cd site; zip ../site.zip *; 
+        run: cd donetapp/site; zip ../site.zip *; 
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v16
@@ -34,6 +34,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: "donetapp"
           environment_name: "aws-donetapp"
-          version_label: ${{ github.run_id }}
+          version_label: ${{ github.run_number }}
           region: "us-east-1"
           deployment_package: site.zip
