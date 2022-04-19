@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:     
+      - name: Git setup
+        uses: actions/checkout@v2
+      
+      - name: Dotnet run
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0' # SDK Version to use; x will use the latest version of the 3.1 channel
+      
+      - name: Publish prod
+        run: dotnet restore; dotnet publish -r linux-x64 --configuration "Release" --self-contained "true" -o ./site;
+
+      - name: Generate deployment package 
+        run: cd site; zip ../site.zip *; cd ..; site.zip aws-windows-deployment-manifest.json
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v16
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: "donetapp"
+          environment_name: "aws-donetapp"
+          version_label: ${{ github.run_id }}
+          region: "us-east-1"
+          deployment_package: site.zip
