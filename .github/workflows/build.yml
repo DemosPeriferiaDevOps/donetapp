@@ -34,6 +34,6 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: "netapp"
           environment_name: "netapp-env"
-          version_label: ${{ github.run_number }}
+          version_label: ${{ github.run_id }}
           region: "us-east-1"
           deployment_package: site.zip
