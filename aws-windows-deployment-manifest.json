@@ -3,7 +3,7 @@
   "deployments": {
     "aspNetCoreWeb": [
       {
-        "name": "donetapp",
+        "name": "netapp",
         "parameters": {
           "appBundle": "site.zip",
           "iisPath": "/",
